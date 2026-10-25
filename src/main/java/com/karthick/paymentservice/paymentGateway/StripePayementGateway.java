@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class StripePayementGateway implements PaymentGateway {
 
-    @Value("${STRIPE_API_KEY}")
+    @Value("${STRIPE_API_KEY:}")
     private String apiKey;
 
     @Override
