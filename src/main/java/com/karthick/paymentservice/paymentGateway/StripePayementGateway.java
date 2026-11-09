@@ -17,7 +17,7 @@ public class StripePayementGateway implements PaymentGateway {
     private String apiKey;
 
     @Override
-    public String initiatePayment(PaymentRequestDto request) {
+    public PaymentLinkResult initiatePayment(PaymentRequestDto request) {
         Stripe.apiKey = apiKey;
 
         try {
@@ -40,12 +40,13 @@ public class StripePayementGateway implements PaymentGateway {
                                     .setQuantity(1L)
                                     .build()
                     )
+                    .putMetadata("orderId", request.getOrderId())
                     .setAfterCompletion(
                             PaymentLinkCreateParams.AfterCompletion.builder()
                                     .setType(PaymentLinkCreateParams.AfterCompletion.Type.REDIRECT)
                                     .setRedirect(
                                             PaymentLinkCreateParams.AfterCompletion.Redirect.builder()
-                                                    .setUrl("http://localhost:8000/payment/success?orderId=" + request.getOrderId())
+                                                    .setUrl("http://localhost:8282/orders/confirm?orderId=" + request.getOrderId())
                                                     .build()
                                     )
                                     .build()
@@ -53,7 +54,7 @@ public class StripePayementGateway implements PaymentGateway {
                     .build();
 
             PaymentLink paymentLink = PaymentLink.create(linkParams);
-            return paymentLink.getUrl();
+            return new PaymentLinkResult(paymentLink.getId(), paymentLink.getUrl());
 
         } catch (StripeException e) {
             throw new RuntimeException(e.getMessage(), e);

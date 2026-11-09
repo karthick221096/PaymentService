@@ -8,7 +8,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class PaymentResponseDto {
-    private String paymentLink;
+    private String paymentLinkId;
+    private String paymentLinkUrl;
     private String gateway;
     private String orderId;
 }

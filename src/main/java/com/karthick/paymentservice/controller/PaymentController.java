@@ -24,6 +24,7 @@ public class PaymentController {
 
     @GetMapping("/success")
     public ResponseEntity<String> paymentSuccess(@RequestParam("orderId") String orderId) {
+        paymentService.updatePaymentStatus(orderId);
         return ResponseEntity.ok("Payment successful for order: " + orderId);
     }
 }

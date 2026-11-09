@@ -18,7 +18,7 @@ public class RazorpayPaymentGateway implements PaymentGateway {
     private String apiSecret;
 
     @Override
-    public String initiatePayment(PaymentRequestDto request) {
+    public PaymentLinkResult initiatePayment(PaymentRequestDto request) {
         try {
             RazorpayClient client = new RazorpayClient(apiKey, apiSecret);
 
@@ -30,19 +30,23 @@ public class RazorpayPaymentGateway implements PaymentGateway {
             notify.put("sms", true);
             notify.put("email", true);
 
+            JSONObject notes = new JSONObject();
+            notes.put("orderId", request.getOrderId());
+
             JSONObject paymentLinkRequest = new JSONObject();
             paymentLinkRequest.put("amount", request.getAmount());
             paymentLinkRequest.put("currency", request.getCurrency());
             paymentLinkRequest.put("description", request.getProductName());
             paymentLinkRequest.put("customer", customer);
             paymentLinkRequest.put("notify", notify);
+            paymentLinkRequest.put("notes", notes);
             paymentLinkRequest.put("reminder_enable", true);
             paymentLinkRequest.put("callback_url",
-                    "http://localhost:8000/payment/success?orderId=" + request.getOrderId());
+                    "http://localhost:8282/orders/confirm?orderId=" + request.getOrderId());
             paymentLinkRequest.put("callback_method", "get");
 
             PaymentLink paymentLink = client.paymentLink.create(paymentLinkRequest);
-            return paymentLink.get("short_url");
+            return new PaymentLinkResult(paymentLink.get("id"), paymentLink.get("short_url"));
 
         } catch (RazorpayException e) {
             throw new RuntimeException(e.getMessage(), e);
