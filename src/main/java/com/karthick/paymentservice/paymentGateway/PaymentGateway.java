@@ -1,7 +1,7 @@
 package com.karthick.paymentservice.paymentGateway;
 
-import com.stripe.exception.StripeException;
+import com.karthick.paymentservice.dtos.PaymentRequestDto;
 
 public interface PaymentGateway {
-    String initiatePayment(Long orderId, String phoneNumber);
+    String initiatePayment(PaymentRequestDto request);
 }

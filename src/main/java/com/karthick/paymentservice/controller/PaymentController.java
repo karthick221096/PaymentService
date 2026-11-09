@@ -1,22 +1,29 @@
 package com.karthick.paymentservice.controller;
 
+import com.karthick.paymentservice.dtos.PaymentRequestDto;
+import com.karthick.paymentservice.dtos.PaymentResponseDto;
 import com.karthick.paymentservice.service.PaymentService;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/payment")
 public class PaymentController {
+
     private final PaymentService paymentService;
-    public PaymentController(PaymentService paymentService){
+
+    public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
     }
 
-    @GetMapping("/initiate/{orderId}")
-    public String makePayment(@PathVariable("orderId") String orderId){
-        return paymentService.initiatePayment(
-                Long.valueOf(orderId),
-                "872456784"
-        );
+    @PostMapping("/initiate")
+    public ResponseEntity<PaymentResponseDto> initiatePayment(@RequestBody PaymentRequestDto request) {
+        PaymentResponseDto response = paymentService.initiatePayment(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/success")
+    public ResponseEntity<String> paymentSuccess(@RequestParam("orderId") String orderId) {
+        return ResponseEntity.ok("Payment successful for order: " + orderId);
     }
 }
